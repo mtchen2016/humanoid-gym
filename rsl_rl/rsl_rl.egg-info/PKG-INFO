@@ -1,0 +1,16 @@
+Metadata-Version: 2.1
+Name: rsl_rl
+Version: 2.0.2
+Summary: Fast and simple RL algorithms implemented in pytorch
+Home-page: https://github.com/leggedrobotics/rsl_rl
+Author: ETH Zurich, NVIDIA CORPORATION
+Maintainer: Nikita Rudin, David Hoeller
+Maintainer-email: rudinn@ethz.ch
+License: BSD-3
+Requires-Python: >=3.6
+License-File: LICENSE
+Requires-Dist: torch>=1.10.0
+Requires-Dist: torchvision>=0.5.0
+Requires-Dist: numpy>=1.16.4
+Requires-Dist: GitPython
+Requires-Dist: onnx

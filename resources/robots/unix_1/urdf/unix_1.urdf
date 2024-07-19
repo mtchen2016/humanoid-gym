@@ -1,0 +1,757 @@
+<?xml version="1.0" encoding="utf-8"?>
+<robot name="">
+
+  <!-- <link name="world" />
+  <joint name ="weld" type="fixed">
+    <parent link="world"/>
+    <child link="base_link"/>
+    <origin xyz="0 0 0.1"/>
+  </joint> -->
+
+  <gazebo>
+    <plugin name="gazebo_ros_control" filename="libhunter_bipedal_hw_sim.so">
+      <robotNamespace>/</robotNamespace>
+      <robotParam>legged_robot_description</robotParam>
+      <robotSimType>legged_gazebo/LeggedHWSim</robotSimType>
+    </plugin>
+  </gazebo>
+
+  <gazebo>
+    <plugin filename="libgazebo_ros_p3d.so" name="p3d_base_controller">
+      <alwaysOn>true</alwaysOn>
+      <updateRate>500.0</updateRate>
+      <bodyName>base_link</bodyName>
+      <topicName>ground_truth/state</topicName>
+      <gaussianNoise>0</gaussianNoise>
+      <frameName>world</frameName>
+      <xyzOffsets>0 0 0</xyzOffsets>
+      <rpyOffsets>0 0 0</rpyOffsets>
+    </plugin>
+  </gazebo>
+
+  <link name="base_link">
+    <inertial>
+      <origin xyz="-0.00563454 -0.00001244 0.12092241" rpy="0 0 0" />
+      <mass value="6.76592413" />
+      <inertia ixx="0.29571510" ixy="0.00000157" ixz="-0.01321787" iyy="0.28435720" iyz="-0.00000827" izz="0.04562067" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh
+        filename="../meshes/base.STL" />
+      </geometry>
+      <material name="">
+        <color rgba="0.75294 0.75294 0.75294 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0.3" rpy="0 0 0" />
+      <geometry>
+        <box size="0.24 0.2 0.68" /><!--宽 长 高!-->
+      </geometry>
+    </collision>
+  </link>
+
+  <!-- <joint name="battery_joint" type="fixed">
+    <origin rpy="0. 0. 0." xyz="0. 0. 0"/>
+    <parent link="base_link"/>
+    <child link="battery_link"/>
+  </joint>
+
+  <link
+    name="battery_link">
+    <inertial>
+      <origin xyz="0.00515714 0 -0.04298686" rpy="0 0 0" />
+      <mass value="1.69361037" />
+      <inertia ixx="0.00212168" ixy="0.00000006" ixz="0.00001365" iyy="0.00365784" iyz="-0.00000003" izz="0.0046202" />
+    </inertial>
+  </link> -->
+
+  <!-- Imu is fixed to the base link -->
+  <joint name="imu_joint" type="fixed">
+    <origin rpy="0. 0. 0." xyz="0. 0. 0"/>
+    <parent link="base_link"/>
+    <child link="imu_link"/>
+  </joint>
+  <!-- Imu link -->
+  <link name="imu_link">
+    <inertial>
+      <mass value="0.01"/>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <inertia ixx="0.000001" ixy="0" ixz="0" iyy="0.000001" iyz="0" izz="0.000001"/>
+    </inertial>
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <box size="0.015 0.015 0.004"/>
+      </geometry>
+    </visual>
+    <material name="orange">
+      <color rgba="255 108 10 255"/>
+    </material>
+  </link>
+  <gazebo reference="imu_joint">
+    <disableFixedJointLumping>true</disableFixedJointLumping>
+  </gazebo>
+
+  <!-- ************************************************************ -->
+  <!-- ************************ Left Leg ************************** -->
+  <!-- ************************************************************ -->
+
+  <!-- ************* part 1 *************** -->
+  <joint name="leg_l1_joint" type="revolute">
+    <origin xyz="0.0065 0.12 -0.1166" rpy="0 0 0" />
+    <parent link="base_link" />
+    <child link="leg_l1_link" />
+    <axis xyz="1 0 0" />
+    <dynamics damping="0.00" friction="0.2"/>
+    <limit lower="-0.2" upper="0.5" effort="12.1" velocity="25.1" />
+  </joint>
+  <link name="leg_l1_link">
+    <inertial>
+      <origin xyz="0.00124797 0.00000602 0.00247008" rpy="0 0 0" />
+      <mass value="0.48411139" />
+      <inertia ixx="0.00024891" ixy="0.00000022" ixz="0.00000644" iyy="0.00036981" iyz="0.00000091" izz="0.00032850" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="../meshes/leg_l1.STL" />
+      </geometry>
+      <material name="">
+        <color rgba="0.75294 0.75294 0.75294 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="-0.019 -0.001 0" rpy="1.57 0 1.57" />
+      <geometry>
+        <box size="0.06 0.07 0.155" />
+      </geometry>
+    </collision>
+  </link>
+
+  <!-- ************* part 2 *************** -->
+  <joint name="leg_l2_joint" type="revolute">
+    <origin xyz="0 0 -0.0295" rpy="0 0 0" />
+    <parent link="leg_l1_link" />
+    <child link="leg_l2_link" />
+    <axis xyz="0 0 1" />
+    <dynamics damping="0.00" friction="0.2"/>
+    <limit lower="-0.5" upper="1" effort="36.1" velocity="8.1" />
+  </joint>
+  <link name="leg_l2_link">
+    <inertial>
+      <origin xyz="0 0.04198981 -0.07596353" rpy="0 0 0" />
+      <mass value="1.48516585" />
+      <inertia ixx="0.00213438" ixy="0" ixz="0.00000003" iyy="0.00315551" iyz="0.00023219" izz="0.00173118" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="../meshes/leg_l2.STL" />
+      </geometry>
+      <material name="">
+        <color rgba="0.75294 0.75294 0.75294 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0.0046 -0.07" rpy="1.57 0 0" />
+      <geometry>
+        <cylinder length="0.146" radius="0.065"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <!-- ************* part 3 *************** -->
+  <joint name="leg_l3_joint" type="revolute">
+    <origin xyz="0.0 -0.0035 -0.081" rpy="0 0 0" />
+    <parent link="leg_l2_link" />
+    <child link="leg_l3_link" />
+    <axis xyz="0 -1 0" />
+    <dynamics damping="0.00" friction="0.2"/>
+    <limit lower="-0.8" upper="1.2" effort="150.1" velocity="12.6" />
+  </joint>
+  <link name="leg_l3_link">
+    <inertial>
+      <origin xyz="0.00386769 -0.02792999 -0.04011025" rpy="0 0 0" />
+      <mass value="2.38394353" />
+      <inertia ixx="0.02170874" ixy="-0.00020223" ixz="0.00141826" iyy="0.02270032" iyz="0.00207653" izz="0.00378059" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="../meshes/leg_l3.STL" />
+      </geometry>
+      <material name="">
+        <color rgba="0.75294 0.75294 0.75294 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0.015 0.0 -0.17" rpy="1.57 0 0" />
+      <geometry>
+        <box size="0.06 0.25 0.05" />
+      </geometry>
+    </collision>
+  </link>
+
+  <!-- ************* part 4 *************** -->
+  <joint name="leg_l4_joint" type="revolute">
+    <origin xyz="0 0 -0.35" rpy="0 0 0" />
+    <parent link="leg_l3_link" />
+    <child link="leg_l4_link" />
+    <axis xyz="0 1 0" />
+    <dynamics damping="0" friction="0.2"/>
+    <limit lower="0" upper="1.5" effort="150.1" velocity="12.6" />
+  </joint>
+  <link name="leg_l4_link">
+    <inertial>
+      <origin xyz="-0.00223740 0.00243432 -0.11735483" rpy="0 0 0" />
+      <mass value="0.760136154" />
+      <!-- <mass value="0.80136154" /> -->
+      <inertia ixx="0.00708282" ixy="-0.0000173" ixz="0.00003185" iyy="0.00714764" iyz="-0.00015267" izz="0.0003965" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="../meshes/leg_l4.STL" />
+      </geometry>
+      <material name="">
+        <color rgba="0.75294 0.75294 0.75294 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 -0.14" rpy="1.57 0 0" />
+      <geometry>
+        <box size="0.041 0.28 0.03" />
+      </geometry>
+    </collision>
+    <collision>
+      <origin xyz="-0.011 0.012 -0.08" rpy="1.57 0 0" />
+      <geometry>
+        <cylinder length="0.07" radius="0.034"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <!-- ************* part 5 *************** -->
+  <joint name="leg_l5_joint" type="revolute">
+    <origin xyz="0 0 -0.35" rpy="0 0 0" />
+    <parent link="leg_l4_link" />
+    <child link="leg_l5_link" />
+    <axis xyz="0 -1 0" />
+    <dynamics damping="0.00" friction="0.2"/>
+    <limit lower="-1.1" upper="1.1" effort="36.1" velocity="8.1" />
+  </joint>
+  <link name="leg_l5_link">
+    <inertial>
+      <origin xyz="0.02200082 0 -0.01610384" rpy="0 0 0" />
+      <mass value="0.11947294" />
+      <inertia ixx="0.00000829" ixy="0" ixz="0.00000461" iyy="0.0003708" iyz="0" izz="0.00036831" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="../meshes/leg_l5.STL" />
+      </geometry>
+      <material name="">
+        <color rgba="0.75294 0.75294 0.75294 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0.02 0 -0.0102" rpy="1.57 0 0" />
+      <geometry>
+        <box size="0.21 0.0345 0.0175" />
+      </geometry>
+    </collision>
+  </link>
+
+  <joint name="leg_l5_fixed_1" type="fixed">
+    <origin xyz="0.11 0 -0.01" rpy="0 0 0" />
+    <parent link="leg_l5_link" />
+    <child link="leg_l_f1_link" />
+  </joint>
+  <link name="leg_l_f1_link">
+    <inertial>
+      <mass value="0.01" />
+      <inertia ixx="0.000001" ixy="0" ixz="0" iyy="0.000001" iyz="0" izz="0.000001" />
+    </inertial>
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <sphere radius="0.001"/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <sphere radius="0.001"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <joint name="leg_l5_fixed_2" type="fixed">
+    <origin xyz="-0.07 0 -0.01" rpy="0 0 0" />
+    <parent link="leg_l5_link" />
+    <child link="leg_l_f2_link" />
+  </joint>
+  <link name="leg_l_f2_link">
+    <inertial>
+      <mass value="0.01" />
+      <inertia ixx="0.000001" ixy="0" ixz="0" iyy="0.000001" iyz="0" izz="0.000001" />
+    </inertial>
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <sphere radius="0.001"/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin rpy="0 0 0" xyz="-0 0 0"/>
+      <geometry>
+        <sphere radius="0.001"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <gazebo reference="leg_l1_link">
+    <mu1>0.6</mu1>
+    <mu2>0.6</mu2>
+    <self_collide>1</self_collide>
+  </gazebo>
+  <gazebo reference="leg_l2_link">
+    <mu1>0.6</mu1>
+    <mu2>0.6</mu2>
+    <self_collide>1</self_collide>
+  </gazebo>
+  <gazebo reference="leg_l3_link">
+    <mu1>0.6</mu1>
+    <mu2>0.6</mu2>
+    <self_collide>1</self_collide>
+  </gazebo>
+  <gazebo reference="leg_l4_link">
+    <mu1>0.6</mu1>
+    <mu2>0.6</mu2>
+    <self_collide>1</self_collide>
+  </gazebo>
+  <gazebo reference="leg_l5_link">
+    <mu1>1.5</mu1>
+    <mu2>1.5</mu2>
+    <self_collide>1</self_collide>
+    <kp value="1000000.0"/>
+    <kd value="100.0"/>
+    <maxVel>1.0</maxVel>
+    <minDepth>0.00</minDepth>
+  </gazebo>
+  <gazebo reference="leg_l_f1_link">
+    <mu1>1.5</mu1>
+    <mu2>1.5</mu2>
+    <self_collide>1</self_collide>
+    <kp value="1000000.0"/>
+    <kd value="100.0"/>
+    <maxVel>1.0</maxVel>
+    <minDepth>0.00</minDepth>
+  </gazebo>
+  <gazebo reference="leg_l_f2_link">
+    <mu1>1.5</mu1>
+    <mu2>1.5</mu2>
+    <self_collide>1</self_collide>
+    <kp value="1000000.0"/>
+    <kd value="100.0"/>
+    <maxVel>1.0</maxVel>
+    <minDepth>0.00</minDepth>
+  </gazebo>
+
+  <transmission name="leg_l1_tran">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="leg_l1_joint">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="leg_l1_motor">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    <maxVelocity>1.484</maxVelocity><!-- 85rpm -->
+	  <maxEffort>36.0</maxEffort><!-- 36Nm -->
+    </actuator>
+  </transmission>
+
+  <transmission name="leg_l2_tran">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="leg_l2_joint">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="leg_l2_motor">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    <maxVelocity>1.484</maxVelocity><!-- 160rpm -->
+	  <maxEffort>36.0</maxEffort><!-- 94Nm -->
+    </actuator>
+  </transmission>
+
+  <transmission name="leg_l3_tran">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="leg_l3_joint">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="leg_l3_motor">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    <maxVelocity>2.6545</maxVelocity><!-- 160rpm -->
+	  <maxEffort>150.0</maxEffort><!-- 94Nm -->
+    </actuator>
+  </transmission>
+
+  <transmission name="leg_l4_tran">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="leg_l4_joint">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="leg_l4_motor">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    <maxVelocity>2.6545</maxVelocity><!-- 85rpm -->
+	<maxEffort>150.0</maxEffort><!-- 36Nm -->
+    </actuator>
+  </transmission>
+
+  <transmission name="leg_l5_tran">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="leg_l5_joint">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="leg_l5_motor">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+  <!-- ************************************************************ -->
+  <!-- ************************ Right Leg ************************** -->
+  <!-- ************************************************************ -->
+
+  <!-- ************* part 1 *************** -->
+  <joint name="leg_r1_joint" type="revolute">
+    <origin xyz="0.0065 -0.12 -0.1166" rpy="0 0 0" />
+    <parent link="base_link" />
+    <child link="leg_r1_link" />
+    <axis xyz="1 0 0" />
+    <dynamics damping="0.00" friction="0.2"/>
+    <limit lower="-0.5" upper="0.2" effort="12.1" velocity="25.1" />
+  </joint>
+  <link name="leg_r1_link">
+    <inertial>
+      <origin xyz="0.00126545 -0.00000555 0.00247008" rpy="0 0 0" />
+      <mass value="0.48411139" />
+      <inertia ixx="0.00024879" ixy="-0.00000081" ixz="0.00000629" iyy="0.00036991" iyz="-0.00000142" izz="0.00032847" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="../meshes/leg_r1.STL" />
+      </geometry>
+      <material name="">
+        <color rgba="0.75294 0.75294 0.75294 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="-0.019 -0.001 0" rpy="1.57 0 1.57" />
+      <geometry>
+        <box size="0.06 0.07 0.155" />
+      </geometry>
+    </collision>
+  </link>
+
+  <!-- ************* part 2 *************** -->
+  <joint name="leg_r2_joint" type="revolute">
+    <origin xyz="0 0 -0.0295" rpy="0 0 0" />
+    <parent link="leg_r1_link" />
+    <child link="leg_r2_link" />
+    <axis xyz="0 0 1" />
+    <dynamics damping="0.00" friction="0.2"/>
+    <limit lower="-1" upper="0.5" effort="36.1" velocity="8.1" />
+  </joint>
+  <link name="leg_r2_link">
+    <inertial>
+      <origin xyz="0 -0.04198981 -0.07596353" rpy="0 0 0" />
+      <mass value="1.48516585" />
+      <inertia ixx="0.00213438" ixy="0" ixz="-0.00000003" iyy="0.00315551" iyz="-0.00023219" izz="0.00173118" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="../meshes/leg_r2.STL" />
+      </geometry>
+      <material name="">
+        <color rgba="0.75294 0.75294 0.75294 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 -0.0033 -0.07" rpy="1.57 0 0" />
+      <geometry>
+        <cylinder length="0.146" radius="0.065"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <!-- ************* part 3 *************** -->
+  <joint name="leg_r3_joint" type="revolute">
+    <origin xyz="0 0.0035 -0.081" rpy="0 0 0" />
+    <parent link="leg_r2_link" />
+    <child link="leg_r3_link" />
+    <axis xyz="0 1 0" />
+    <dynamics damping="0.00" friction="0.2"/>
+    <limit lower="-1.2" upper="0.8" effort="150.1" velocity="12.6" />
+  </joint>
+  <link name="leg_r3_link">
+    <inertial>
+      <origin xyz="0.00386769 0.0328192999 -0.0413911025" rpy="0 0 0" />
+      <mass value="2.38394353" />
+      <inertia ixx="0.02170874" ixy="0.00020223" ixz="0.00141826" iyy="0.02270032" iyz="-0.00207653" izz="0.00378059" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="../meshes/leg_r3.STL" />
+      </geometry>
+      <material name="">
+        <color rgba="0.75294 0.75294 0.75294 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0.015 0.0 -0.17" rpy="1.57 0 0" />
+      <geometry>
+        <box size="0.06 0.25 0.05" />
+      </geometry>
+    </collision>
+  </link>
+
+  <!-- ************* part 4 *************** -->
+  <joint name="leg_r4_joint" type="revolute">
+    <origin xyz="0 0 -0.35" rpy="0 0 0" />
+    <parent link="leg_r3_link" />
+    <child link="leg_r4_link" />
+   <axis xyz="0 1 0" />
+   <dynamics damping="0.00" friction="0.2"/>
+    <limit lower="0" upper="1.5" effort="150.1" velocity="12.6" />
+  </joint>
+  <link name="leg_r4_link">
+    <inertial>
+      <origin xyz="-0.00223740 -0.00243432 -0.12735483" rpy="0 0 0" />
+      <mass value="0.760136154" />
+      <!-- <mass value="0.80136154" /> -->
+      <inertia ixx="0.00708921" ixy="0.00001694" ixz="0.00003157" iyy="0.00715410" iyz="0.00015332" izz="0.00039657" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="../meshes/leg_r4.STL" />
+      </geometry>
+      <material name="">
+        <color rgba="0.75294 0.75294 0.75294 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 -0.14" rpy="1.57 0 0" />
+      <geometry>
+        <box size="0.041 0.28 0.03" />
+      </geometry>
+    </collision>
+    <collision>
+      <origin xyz="-0.011 -0.012 -0.08" rpy="1.57 0 0" />
+      <geometry>
+        <cylinder length="0.07" radius="0.034"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <!-- ************* part 5 *************** -->
+  <joint name="leg_r5_joint" type="revolute">
+    <origin xyz="0 0 -0.35" rpy="0 0 0" />
+    <parent link="leg_r4_link" />
+    <child link="leg_r5_link" />
+    <axis xyz="0 1 0" />
+    <dynamics damping="0.00" friction="0.2"/>
+    <limit lower="-1.1" upper="1.1" effort="36.1" velocity="8.1" />
+  </joint>
+  <link name="leg_r5_link">
+    <inertial>
+      <origin xyz="0.02200082 0 -0.01610384" rpy="0 0 0" />
+      <mass value="0.11947294" />
+      <inertia ixx="0.00000829" ixy="0" ixz="0.00000461" iyy="0.0003708" iyz="0" izz="0.00036831" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="../meshes/leg_r5.STL" />
+      </geometry>
+      <material name="">
+        <color rgba="0.75294 0.75294 0.75294 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0.02 0 -0.0102" rpy="1.57 0 0" />
+      <geometry>
+        <box size="0.21 0.0345 0.0175" />
+        </geometry>
+    </collision>
+  </link>
+
+  <joint name="leg_r5_fixed_1" type="fixed">
+    <origin xyz="0.11 0 -0.01" rpy="0 0 0" />
+    <parent link="leg_r5_link" />
+    <child link="leg_r_f1_link" />
+  </joint>
+  <link name="leg_r_f1_link">
+    <inertial>
+      <mass value="0.01" />
+      <inertia ixx="0.000001" ixy="0" ixz="0" iyy="0.000001" iyz="0" izz="0.000001" />
+    </inertial>
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <sphere radius="0.001"/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <sphere radius="0.001"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <joint name="leg_r5_fixed_2" type="fixed">
+    <origin xyz="-0.07 0 -0.01" rpy="0 0 0" />
+    <parent link="leg_r5_link" />
+    <child link="leg_r_f2_link" />
+  </joint>
+  <link name="leg_r_f2_link">
+    <inertial>
+      <mass value="0.01" />
+      <inertia ixx="0.000001" ixy="0" ixz="0" iyy="0.000001" iyz="0" izz="0.000001" />
+    </inertial>
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <sphere radius="0.001"/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <sphere radius="0.001"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <gazebo reference="leg_r1_link">
+    <mu1>0.6</mu1>
+    <mu2>0.6</mu2>
+    <self_collide>1</self_collide>
+  </gazebo>
+  <gazebo reference="leg_r2_link">
+    <mu1>0.6</mu1>
+    <mu2>0.6</mu2>
+    <self_collide>1</self_collide>
+  </gazebo>
+  <gazebo reference="leg_r3_link">
+    <mu1>0.6</mu1>
+    <mu2>0.6</mu2>
+    <self_collide>1</self_collide>
+  </gazebo>
+  <gazebo reference="leg_r4_link">
+    <mu1>0.6</mu1>
+    <mu2>0.6</mu2>
+    <self_collide>1</self_collide>
+  </gazebo>
+  <gazebo reference="leg_r5_link">
+    <mu1>1.5</mu1>
+    <mu2>1.5</mu2>
+    <self_collide>1</self_collide>
+    <kp value="1000000.0"/>
+    <kd value="100.0"/>
+    <maxVel>1.0</maxVel>
+    <minDepth>0.00</minDepth>
+  </gazebo>
+  <gazebo reference="leg_r_f1_link">
+    <mu1>1.5</mu1>
+    <mu2>1.5</mu2>
+    <self_collide>1</self_collide>
+    <kp value="1000000.0"/>
+    <kd value="100.0"/>code 
+    <maxVel>1.0</maxVel>
+    <minDepth>0.00</minDepth>
+  </gazebo>
+  <gazebo reference="leg_r_f2_link">
+    <mu1>1.5</mu1>
+    <mu2>1.5</mu2>
+    <self_collide>1</self_collide>
+    <kp value="1000000.0"/>
+    <kd value="100.0"/>
+    <maxVel>1.0</maxVel>
+    <minDepth>0.00</minDepth>
+  </gazebo>
+
+  <transmission name="leg_r1_tran">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="leg_r1_joint">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="leg_r1_motor">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+      	  <maxVelocity>1.484</maxVelocity><!-- 85rpm -->
+	<maxEffort>36.0</maxEffort><!-- 36Nm -->
+    </actuator>
+  </transmission>
+
+  <transmission name="leg_r2_tran">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="leg_r2_joint">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="leg_r2_motor">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+      	  <maxVelocity>1.484</maxVelocity><!-- 160rpm -->
+	  <maxEffort>36.0</maxEffort><!-- 94Nm -->
+    </actuator>
+  </transmission>
+
+  <transmission name="leg_r3_tran">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="leg_r3_joint">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="leg_r3_motor">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+      	  <maxVelocity>2.6545</maxVelocity><!-- 160rpm -->
+	  <maxEffort>150.0</maxEffort><!-- 94Nm -->
+    </actuator>
+  </transmission>
+
+  <transmission name="leg_r4_tran">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="leg_r4_joint">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="leg_r4_motor">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+      	  <maxVelocity>2.6545</maxVelocity><!-- 85rpm -->
+	<maxEffort>150.0</maxEffort><!-- 36Nm -->
+    </actuator>
+  </transmission>
+
+  <transmission name="leg_r5_tran">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="leg_r5_joint">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="leg_r5_motor">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+
+</robot>

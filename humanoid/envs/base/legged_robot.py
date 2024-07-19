@@ -36,6 +36,7 @@ import numpy as np
 from isaacgym.torch_utils import *
 from isaacgym import gymtorch, gymapi, gymutil
 from collections import deque
+from termcolor import cprint
 
 import torch
 
@@ -295,6 +296,7 @@ class LeggedRobot(BaseTask):
         # randomize base mass
         if self.cfg.domain_rand.randomize_base_mass:
             rng = self.cfg.domain_rand.added_mass_range
+            #cprint(f"Debug: {rng,  len(props)}", 'green', attrs=['bold'])
             props[0].mass += np.random.uniform(rng[0], rng[1])
 
         return props
@@ -484,7 +486,6 @@ class LeggedRobot(BaseTask):
         self.default_dof_pos = torch.zeros(self.num_dof, dtype=torch.float, device=self.device, requires_grad=False)
         for i in range(self.num_dofs):
             name = self.dof_names[i]
-            # print(name)
             self.default_dof_pos[i] = self.cfg.init_state.default_joint_angles[name]
             found = False
             for dof_name in self.cfg.control.stiffness.keys():
@@ -595,6 +596,8 @@ class LeggedRobot(BaseTask):
         asset_path = self.cfg.asset.file.format(LEGGED_GYM_ROOT_DIR=LEGGED_GYM_ROOT_DIR)
         asset_root = os.path.dirname(asset_path)
         asset_file = os.path.basename(asset_path)
+
+        cprint(f"Debug robot_asset: {asset_path, asset_root, asset_file}", 'green', attrs=['bold'])
 
         asset_options = gymapi.AssetOptions()
         asset_options.default_dof_drive_mode = self.cfg.asset.default_dof_drive_mode
